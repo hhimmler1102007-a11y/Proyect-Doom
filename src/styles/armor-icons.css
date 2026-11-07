@@ -1,0 +1,47 @@
+/* Iconos de cascos y chalecos (sprites pixel-art, tiers 1-3).
+   Se dibujan como <i class="armor-ico ai-helm1"> en tienda, inventario, botín,
+   cajas fuertes, ranuras de equipo y barras del HUD. El fondo de color por tier
+   lo sigue poniendo el juego (ITEMS[..].color); aquí solo va el sprite. */
+.armor-ico{display:inline-block;flex-shrink:0;font-style:normal;width:1.5em;height:1.5em;
+  background-repeat:no-repeat;background-position:center;background-size:contain;
+  vertical-align:middle;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.45))}
+.ai-helm1{background-image:url('../assets/img/armor-helm1.png')}
+.ai-helm2{background-image:url('../assets/img/armor-helm2.png')}
+.ai-helm3{background-image:url('../assets/img/armor-helm3.png')}
+.ai-vest1{background-image:url('../assets/img/armor-vest1.png')}
+.ai-vest2{background-image:url('../assets/img/armor-vest2.png')}
+.ai-vest3{background-image:url('../assets/img/armor-vest3.png')}
+
+/* tienda: llena el cuadrado del icono */
+.shopCard .ic .armor-ico{width:88%;height:88%}
+/* inventario / botín / caja fuerte / baúl de tienda: el .sym ya fija el tamaño con font-size */
+.slot .sym .armor-ico{width:1.55em;height:1.55em}
+#shopStash .slot .sym .armor-ico{width:1.7em;height:1.7em}
+/* ranuras de equipo (casco / chaleco equipados) */
+.eqrow .slot:has(.armor-ico){aspect-ratio:auto;height:auto;min-height:92px;max-width:90px;justify-content:flex-start;padding:5px 3px;overflow:hidden}
+.eqrow .slot .armor-ico{display:block;margin:0 auto 3px;width:30px;height:30px}
+#invPanel .eqrow .slot:has(.armor-ico){height:auto;min-height:66px;padding:3px 2px}
+#invPanel .eqrow .slot .armor-ico{width:22px;height:22px;margin-bottom:2px}
+/* barras del HUD (casco / chaleco equipados) */
+.nb i.armor-ico{width:16px;height:16px;opacity:1}
+
+/* ---------------- ARMAS (sprites horizontales) ---------------- */
+.weapon-ico{display:inline-block;flex-shrink:0;font-style:normal;width:2.7em;height:1.6em;
+  background-repeat:no-repeat;background-position:center;background-size:contain;
+  vertical-align:middle;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.55))}
+.wi-beretta{background-image:url('../assets/img/weapon-beretta.png')}
+.wi-rifle{background-image:url('../assets/img/weapon-rifle.png')}
+.wi-ak47{background-image:url('../assets/img/weapon-ak47.png')}
+.wi-mg42{background-image:url('../assets/img/weapon-mg42.png')}
+.wi-rocketl{background-image:url('../assets/img/weapon-rocketl.png')}
+/* tienda: llena el cuadrado del icono */
+.shopCard .ic .weapon-ico{width:94%;height:74%}
+/* inventario / botín / caja fuerte / baúl de tienda */
+.slot .sym:has(.weapon-ico){width:92%}
+.slot .sym .weapon-ico{width:100%;max-width:3.2em;height:1.7em}
+#shopStash .slot .sym .weapon-ico{max-width:3.6em;height:1.9em}
+/* ranuras de arma equipada */
+.eqrow .slot:has(.weapon-ico){aspect-ratio:auto;height:auto;min-height:92px;max-width:90px;justify-content:flex-start;padding:5px 3px;overflow:hidden}
+.eqrow .slot .weapon-ico{display:block;margin:2px auto 3px;width:100%;height:34px}
+#invPanel .eqrow .slot:has(.weapon-ico){height:auto;min-height:66px;padding:3px 2px}
+#invPanel .eqrow .slot .weapon-ico{height:24px;margin:1px auto 2px}

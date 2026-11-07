@@ -1,0 +1,391 @@
+
+/* === INTRO VIDEO === */
+#introScreen{
+  position:fixed;
+  inset:0;
+  z-index:10000; /* sobre la pantalla de carga (9999), bajo el aviso de rotar (99999) */
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;-webkit-user-select:none;
+}
+#introScreen.off{display:none !important;}
+#introScreen.fade{opacity:0;transition:opacity .45s ease;pointer-events:none;}
+#introVideo{
+  width:100%;
+  height:100%;
+  object-fit:contain; /* todo el video visible, sin recortar ni deformar */
+  background:#000;
+  pointer-events:none;
+}
+#introSkipHint{
+  position:absolute;
+  left:0;right:0;
+  bottom:calc(14px + env(safe-area-inset-bottom));
+  text-align:center;
+  font-family:"Barlow Condensed","Inter",sans-serif;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.72);
+  text-shadow:0 1px 3px #000,0 0 10px rgba(0,0,0,.9);
+  pointer-events:none;
+  animation:introHint 2.4s ease-in-out infinite;
+}
+@keyframes introHint{0%,100%{opacity:.45}50%{opacity:.9}}
+#introStart{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#introStart.off{display:none;}
+#introStart span{
+  font-family:"Barlow Condensed","Inter",sans-serif;
+  font-size:15px;
+  font-weight:600;
+  letter-spacing:5px;
+  text-transform:uppercase;
+  color:#fff;
+  text-shadow:0 0 12px rgba(0,0,0,.9);
+  animation:introHint 2s ease-in-out infinite;
+}
+/* el aviso de saltar solo aparece cuando el video ya está sonando */
+
+
+#introSkipHint{visibility:hidden;}
+#introScreen.playing #introSkipHint{visibility:visible;}
+
+/* === BOOT SCREEN - EXTRACTION DOOM - V1 === */
+#bootScreen{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+#bootScreen:not(.on){display:none !important;}
+.bootBg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover; /* se adapta sin deformarse, cubre cualquier resolución */
+  object-position:center center;
+  -o-object-fit:cover;
+}
+.bootVignette{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.08) 32%,rgba(0,0,0,.18) 70%,rgba(0,0,0,.78) 100%),
+    radial-gradient(ellipse at 50% 55%,transparent 45%,rgba(0,0,0,.45) 100%);
+  pointer-events:none;
+}
+.bootLogo{
+  position:absolute;
+  top:calc(28px + env(safe-area-inset-top));
+  left:calc(28px + env(safe-area-inset-left));
+  z-index:2;
+  width:min(38vw, 360px);
+  max-width:72%;
+  height:auto;
+  object-fit:contain; /* sin deformación */
+  filter: drop-shadow(0 3px 12px rgba(0,0,0,.85)) drop-shadow(0 0 16px rgba(0,0,0,.6));
+  pointer-events:none;
+}
+#bootLoadingWrap{
+  position:absolute;
+  bottom:calc(42px + env(safe-area-inset-bottom));
+  left:50%;
+  transform:translateX(-50%);
+  width:min(74vw, 560px);
+  z-index:3;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  align-items:center;
+}
+#bootLoadingTrack{
+  width:100%;
+  height:10px;
+  background:rgba(0,0,0,.62);
+  border:1px solid rgba(214,182,94,.35);
+  border-bottom:2px solid rgba(255,176,46,.55);
+  overflow:hidden;
+  box-shadow:0 2px 18px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.08);
+}
+#bootLoadingFill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#7a5420 0%,#d6b65e 28%,#ffb02e 55%,#ffe9a8 85%,#fff3c0 100%);
+  box-shadow:0 0 14px rgba(255,176,46,.75),0 0 28px rgba(214,182,94,.45);
+  transition:width .08s linear;
+  will-change:width;
+}
+#bootLoadingText{
+  font-family:"Barlow Condensed","Inter",sans-serif;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:4px;
+  color:#fff;
+  text-shadow:1px 1px 0 #000,0 0 10px rgba(0,0,0,.9);
+  text-align:center;
+}
+@media(max-width:600px){
+  .bootLogo{ width:min(58vw,280px); top:calc(18px + env(safe-area-inset-top)); left:calc(18px + env(safe-area-inset-left)); }
+  #bootLoadingWrap{ bottom:calc(24px + env(safe-area-inset-bottom)); width:86vw; }
+}
+@media(max-height:500px){
+  .bootLogo{ width:min(32vw,220px); }
+}
+
+/* === MENU LOGO REPLACEMENT - WHITE ONLY === */
+#menuScreen h1.menuLogoWrap{
+  margin:6px 0 8px;
+  padding:0;
+  background:none;
+  border:none;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.menuLogo{
+  width:min(90vw, 580px);
+  height:auto;
+  max-height:28vh;
+  object-fit:contain; /* sin deformarse - más grande */
+  filter: drop-shadow(0 5px 20px rgba(0,0,0,.95)) drop-shadow(0 0 26px rgba(255,255,255,.10)) drop-shadow(0 0 40px rgba(214,182,94,.12));
+  display:block;
+  transform:scale(1.08);
+}
+
+
+/* ===== HORIZONTAL / PANTALLAS BAJAS (Android landscape) ===== */
+.menuLeft,.menuRight,.shopSide,.invLeft,.invRight{display:contents}
+.menuLeft>*,.menuRight>*{flex-shrink:0}
+.menuLeft>:first-child{margin-top:auto}
+.menuRight>:last-child{margin-bottom:auto}
+#shopClose{order:10}
+@media (orientation:landscape) and (max-height:560px){
+  /* ---- MENÚ: 2 columnas, todo cabe sin scroll ---- */
+  #menuScreen.on{display:grid !important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;justify-items:center;
+    column-gap:clamp(12px,3vw,32px);padding:calc(8px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));overflow:hidden}
+  #menuScreen:before{inset:5px}
+  #menuScreen:after{display:none}
+  #menuScreen>:first-child,#menuScreen>:last-child,.menuLeft>:first-child,.menuRight>:last-child{margin:0}
+  #menuScreen .menuLeft,#menuScreen .menuRight{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:0;max-height:100%;min-width:0;width:100%}
+  #menuScreen .menuEyebrow{font-size:7px;letter-spacing:2px;padding:4px 8px;max-width:100%}
+  #menuScreen h1.menuLogoWrap{margin:0}
+  .menuLogo{max-height:min(30vh,90px);width:auto;max-width:78%;transform:none}
+  #menuScreen .menuLeft>p.hi{font-size:8px !important;letter-spacing:3px !important}
+  #menuStats{min-width:0;width:100%;max-width:340px;padding:5px 8px;font-size:9px;letter-spacing:.5px;line-height:1.55}
+  #menuBtns{width:100%;max-width:340px;gap:6px;margin:0}
+  #menuBtns button{min-height:40px}
+  #menuBtns button.dossierBtn{height:44px !important;min-height:44px !important}
+  .btnThumbWrap{height:44px;width:52px;min-width:52px}
+  .btnContent .btnTitle{font-size:10.5px;letter-spacing:1.2px}
+  #menuBtns #musicBtn,#menuBtns #gfxBtn,#menuBtns #shadowBtn{padding:8px 14px;font-size:11px}
+  #menuControlsHint{display:none}
+
+  /* ---- TIENDA: 3 columnas (filtros | productos | inventario) ---- */
+  #shopScreen.on{display:grid !important;grid-template-columns:minmax(150px,24%) minmax(0,1fr) minmax(150px,27%);
+    grid-template-rows:minmax(0,1fr) auto;column-gap:10px;row-gap:4px;
+    padding:calc(6px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left))}
+  #shopScreen .shopSide{display:flex;flex-direction:column;grid-column:1;grid-row:1 / 3;min-height:0;overflow-y:auto;overflow-x:hidden;touch-action:pan-y}
+  #shopScreen .shopHeader{margin-bottom:5px;padding-bottom:5px}
+  #shopScreen .shopHeader h2{font-size:15px}
+  #shopScreen .shopMoney{font-size:13px}
+  #marketBanner{font-size:7px !important;letter-spacing:.06em !important;padding:4px 6px !important;margin-bottom:5px;flex-wrap:wrap}
+  #insuranceBox{padding:5px 7px;margin-bottom:5px;font-size:8px;letter-spacing:.04em;line-height:1.35}
+  .insuranceBox button,#insuranceBox button{margin-top:4px;padding:5px 8px;font-size:8px}
+  .shopTabs{flex-direction:column;margin-bottom:5px;gap:2px}
+  .shopTabs button{padding:7px 4px;font-size:9px}
+  #shopClose{order:0;margin-top:auto !important;padding:7px 10px !important;font-size:10px !important;letter-spacing:.08em}
+  #shopGrid{grid-column:2;grid-row:1 / 3;margin:0;min-height:0}
+  .shopCard{grid-template-columns:36px minmax(0,1fr) auto;gap:8px;padding:4px 8px 4px 4px}
+  .shopCard .ic{width:36px;height:36px;font-size:18px}
+  .shopStashWrap{grid-column:3;grid-row:1;max-height:none;min-height:0;margin-top:0;padding-top:4px}
+  .shopStashWrap h3{font-size:7px;letter-spacing:.06em;margin-bottom:4px}
+  #shopStash{grid-template-columns:repeat(3,minmax(0,1fr));flex:1}
+  #shopHint{grid-column:3;grid-row:2;font-size:7px;letter-spacing:.04em;margin:0}
+
+  /* ---- Otras pantallas con scroll cómodo ---- */
+  #operationSelectScreen.on{justify-content:flex-start !important;overflow-y:auto;padding-top:calc(10px + env(safe-area-inset-top))}
+  #operationSelectScreen .selectIntro{display:none}
+  #operationSelectScreen h2{font-size:18px;margin-bottom:4px}
+  #mapMissionCard .mapArt{min-height:120px}
+  #mapMissionCard .mapDesc{font-size:10px !important;line-height:1.4 !important}
+  #achGrid,.achGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .overlay{padding:10px}
+}
+
+/* ===== HORIZONTAL v2: misiones, carga, inventario, mapa, HUD ===== */
+@media (orientation:landscape) and (max-height:560px){
+  /* ---- Selector de misiones (sin scroll) ---- */
+  #operationSelectScreen.on{justify-content:center !important;overflow:hidden !important;gap:6px;padding:calc(6px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left))}
+  #operationSelectScreen:before{inset:4px}
+  #operationSelectScreen>:first-child,#operationSelectScreen>:last-child{margin:0 !important}
+  #operationSelectScreen .selectEyebrow{display:none}
+  #operationSelectScreen h2{font-size:15px !important;letter-spacing:3px;margin:0 !important}
+  #mapMissionCard{width:min(100%,640px);grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr) !important;max-height:none !important;overflow:hidden !important}
+  #mapMissionCard .mapArt{min-height:0 !important;height:100%;padding:8px !important}
+  #mapMissionCard .mapArt .mapCode{font-size:8px !important;padding:4px 8px !important}
+  #mapMissionCard .mapInfo{padding:8px 12px !important;gap:4px !important}
+  #mapMissionCard .mapInfo h3{font-size:20px !important;line-height:1}
+  #mapMissionCard .mapStatus{font-size:7px !important}
+  #mapMissionCard .mapDesc{font-size:9px !important;line-height:1.35 !important;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  #mapMissionCard .mapFacts{grid-template-columns:repeat(4,1fr) !important;gap:4px !important}
+  #mapMissionCard .fact{font-size:6px !important;letter-spacing:.06em !important;padding-top:3px}
+  #mapMissionCard .fact b{font-size:9px !important;margin-top:1px}
+  #mapMissionCard .selectedMark{font-size:8px !important}
+  #mapSelectActions{width:min(100%,640px)}
+  #mapSelectActions button{padding:9px 8px !important;font-size:11px !important}
+  #selectExtras{gap:6px}
+  #selectExtras button{padding:6px 10px !important;font-size:8px !important}
+
+  /* ---- Pantalla de carga ---- */
+  #loadingScreen.on{justify-content:center;overflow-y:auto;gap:5px !important;padding:calc(8px + env(safe-area-inset-top)) 24px calc(8px + env(safe-area-inset-bottom))}
+  #loadingScreen>:first-child,#loadingScreen>:last-child{margin:0 !important}
+  #loadingScreen .loadTag{margin:0 !important;font-size:7px !important}
+  #loadingScreen h2{font-size:20px !important;letter-spacing:2px}
+  #loadingScreen .loadSub{display:none}
+  #loadingTip{min-height:0 !important;padding:8px 12px !important;width:min(86vw,520px)}
+  #loadingTip .tipLabel{font-size:7px !important;margin-bottom:4px !important}
+  #loadingTip .tipText{font-size:11px !important;line-height:1.4 !important}
+  #loadTrack{width:min(86vw,520px);flex-shrink:0}
+  #loadPhases{width:min(86vw,520px);gap:3px}
+  .loadPhase{font-size:6px;padding:4px 1px}
+  .loadPhase span{font-size:7px;margin-bottom:1px}
+  #loadStatus{font-size:8px !important}
+  #continueOperationBtn{margin:2px 0 0 !important;padding:8px 16px !important;font-size:11px !important;flex-shrink:0}
+
+  /* ---- Inventario / saqueo: 2 columnas ---- */
+  #invPanel.on{display:grid !important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);column-gap:12px;row-gap:4px;align-items:start;
+    padding:calc(6px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left))}
+  #invPanel .panelTitle{grid-column:1 / -1;margin:0;padding-bottom:4px;font-size:8px;letter-spacing:.14em;text-align:center}
+  #invPanel .invLeft,#invPanel .invRight{display:flex;flex-direction:column;align-items:center;gap:5px;min-height:0;max-height:100%;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;padding-bottom:4px}
+  #invPanel .safeBox{margin:0;padding:5px;width:100%}
+  #invPanel .safeBox h4{font-size:7px;margin-bottom:3px}
+  #invPanel .eqrow{width:100%;gap:4px}
+  #invPanel .eqrow .slot,#invPanel #thRow .slot{max-width:none;aspect-ratio:auto;height:42px;padding:2px}
+  #invPanel .eqrow .slot span:first-child{font-size:6px}
+  #invPanel .eqrow .slot span:first-child .ico-svg{font-size:12px;margin-bottom:0}
+  #invPanel .grid{width:100%;gap:4px;margin:0}
+  #invPanel .grid .slot .sym{font-size:16px}
+  #invPanel #invInfo{margin:0;font-size:8px}
+  #invPanel #invClose{padding:7px 22px;font-size:11px;flex-shrink:0}
+  #lootPanel.on{overflow-y:auto}
+  #lootPanel .grid{margin-bottom:6px}
+
+  /* ---- Mapa grande ---- */
+  #bigMapOverlay{padding:calc(6px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left)) !important;gap:4px !important}
+  #bigMapHeader button{clip-path:none !important;padding:6px 12px !important;font-size:10px !important}
+  #bigMapHeader{padding-right:104px}
+  #bigMapHeader #bigMapClose{position:absolute;right:calc(10px + env(safe-area-inset-right));top:calc(6px + env(safe-area-inset-top))}
+  #bigMapClear{position:absolute !important;right:calc(94px + env(safe-area-inset-right));top:calc(6px + env(safe-area-inset-top));clip-path:none !important;padding:6px 10px !important;font-size:10px !important;letter-spacing:1px !important}
+  #bigMapCanvas{min-height:0 !important}
+  #bigMapLegend{padding:3px 8px !important;gap:2px 10px !important;font-size:7px !important;max-height:16vh !important}
+
+  /* ---- HUD en partida: objetivos fuera de la zona de botones ---- */
+  #objective{top:calc(8px + env(safe-area-inset-top)) !important;right:calc(112px + env(safe-area-inset-right)) !important;max-width:min(30vw,190px) !important;font-size:8px !important;letter-spacing:.5px !important;line-height:1.25}
+  #objList{top:calc(58px + env(safe-area-inset-top)) !important;right:calc(112px + env(safe-area-inset-right)) !important;max-width:min(30vw,190px) !important;font-size:8px !important;line-height:1.2}
+  #objList .obj{white-space:normal !important;margin-bottom:1px}
+  #objList .hdr{font-size:7px !important}
+  #btnFire{width:78px !important;height:78px !important;right:calc(12px + env(safe-area-inset-right)) !important;bottom:calc(14px + env(safe-area-inset-bottom)) !important}
+  #btnMelee{width:50px !important;height:50px !important;right:calc(24px + env(safe-area-inset-right)) !important;bottom:calc(98px + env(safe-area-inset-bottom)) !important}
+  #btnSwap{width:50px !important;height:50px !important;right:calc(100px + env(safe-area-inset-right)) !important;bottom:calc(14px + env(safe-area-inset-bottom)) !important}
+  #btnThrow{width:50px !important;height:50px !important;right:calc(100px + env(safe-area-inset-right)) !important;bottom:calc(72px + env(safe-area-inset-bottom)) !important}
+  #btnInv{width:50px !important;height:50px !important;left:calc(14px + env(safe-area-inset-left)) !important;bottom:calc(14px + env(safe-area-inset-bottom)) !important}
+  #btnLight{width:50px !important;height:50px !important;left:calc(72px + env(safe-area-inset-left)) !important;bottom:calc(14px + env(safe-area-inset-bottom)) !important;font-size:20px !important}
+  #btnLoot{bottom:calc(100px + env(safe-area-inset-bottom)) !important}
+  #conqInfo{top:auto !important;bottom:calc(2px + env(safe-area-inset-bottom)) !important;padding:3px 12px !important;font-size:9px !important;letter-spacing:1.5px !important;max-width:min(60vw,420px);overflow:hidden;text-overflow:ellipsis}
+  #outpostBanner{top:auto !important;bottom:calc(2px + env(safe-area-inset-bottom)) !important;padding:3px 12px !important;font-size:9px !important;letter-spacing:1.5px !important;border-width:1px !important;width:max-content;max-width:calc(100vw - 240px);white-space:normal;overflow:visible;text-align:center;line-height:1.35}
+  #extwrap{bottom:calc(90px + env(safe-area-inset-bottom)) !important}
+}
+
+.shopCard .lvlTag,.lvlTag{display:none !important}
+
+/* ===== SOLO HORIZONTAL: en vertical se bloquea todo ===== */
+#rotateOverlay{position:fixed;inset:0;z-index:99999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#050806;color:#e7e9df;text-align:center;padding:24px;touch-action:none;pointer-events:auto}
+#rotateOverlay .rotIcon{width:84px;height:84px;border:4px solid #d6b65e;border-radius:14px;animation:rotPhone 2.4s ease-in-out infinite}
+#rotateOverlay b{font-size:18px;letter-spacing:5px;color:#d6b65e}
+#rotateOverlay span{font-size:12px;letter-spacing:2px;color:#9ba89a;line-height:1.6}
+@keyframes rotPhone{0%,25%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+@media (orientation:portrait){#rotateOverlay{display:flex}}
+
+/* === PRESENTACIÓN AL APARECER EN EL MAPA === */
+#respawnIntro{
+  position:fixed;
+  inset:0;
+  z-index:55; /* sobre el juego y el HUD, bajo los avisos (#msg 60) y el aviso de rotar */
+  display:none;
+  pointer-events:none;
+}
+#respawnIntro.on{display:block;}
+#respawnBlack{
+  position:absolute;
+  inset:0;
+  background:#000;
+  opacity:1;
+  will-change:opacity;
+}
+#respawnText{
+  position:absolute;
+  left:0;right:0;
+  top:56%;
+  transform:translateY(-50%);
+  text-align:center;
+  opacity:0;
+  will-change:opacity;
+  font-family:"Barlow Condensed","Inter",sans-serif;
+  text-shadow:0 2px 6px #000,0 0 18px rgba(0,0,0,.95);
+}
+#respawnMap{
+  font-size:clamp(26px,6vw,46px);
+  font-weight:800;
+  letter-spacing:8px;
+  color:#fff;
+}
+#respawnWeather{
+  margin-top:8px;
+  font-size:clamp(12px,2.6vw,16px);
+  font-weight:600;
+  letter-spacing:5px;
+  color:#d6b65e;
+}
+
+/* === INFORME DE INTELIGENCIA (Frente de Ceniza) === */
+#briefingScreen{
+  position:fixed;inset:0;
+  z-index:10001; /* sobre el menú y la carga; bajo el aviso de rotar (99999) */
+  background:#000;display:none;align-items:center;justify-content:center;overflow:hidden;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  user-select:none;-webkit-user-select:none;
+}
+#briefingScreen.on{display:flex;}
+#briefingScreen.fade{opacity:0;transition:opacity .35s ease;pointer-events:none;}
+#briefingVideo{width:100%;height:100%;object-fit:contain;background:#000;pointer-events:none;}
+#briefingSkipHint{
+  position:absolute;left:0;right:0;
+  bottom:calc(14px + env(safe-area-inset-bottom));
+  text-align:center;padding:0 12px;
+  font-family:"Barlow Condensed","Inter",sans-serif;
+  font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,255,255,.78);
+  text-shadow:0 1px 3px #000,0 0 10px rgba(0,0,0,.9);
+  pointer-events:none;animation:introHint 2.4s ease-in-out infinite;
+}

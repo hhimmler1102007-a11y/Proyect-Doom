@@ -1,0 +1,17 @@
+{
+  "name": "extraction-doom",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "build:single": "vite build --mode single",
+    "preview": "vite preview --host",
+    "build:single:standalone": "python3 build-single-standalone.py"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0",
+    "vite-plugin-singlefile": "^2.0.0"
+  }
+}

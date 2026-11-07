@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&display=swap" rel="stylesheet">
+<title>EXTRACTION DOOM — DÍA</title>
+<link rel="stylesheet" href="/src/styles/base.css">
+<link rel="stylesheet" href="/src/styles/skin-tactico.css">
+<link rel="stylesheet" href="/src/styles/boot-screen.css">
+<link rel="stylesheet" href="/src/styles/armor-icons.css">
+<link rel="stylesheet" href="/src/styles/bigmap-zoom.css">
+</head><body>
+<div id="rotateOverlay"><div class="rotIcon"></div><b>GIRA TU TELÉFONO</b><span>EXTRACTION DOOM<br>SOLO SE JUEGA EN HORIZONTAL</span></div>
+<canvas id="scene"></canvas>
+<div id="ui">
+ <div id="lowhpEdge"></div><div id="lowhp"></div><div id="lowhpBlood"></div>
+ <div id="compass"><div id="compassStrip"></div><div id="compassMarks"></div><div id="compassCenter"></div></div>
+ <div id="top">
+  <div id="hp"><div class="lbl">VIDA</div><div class="val" id="hpv">100</div><div id="hpbar"><div id="hpfill"></div></div>
+  <div class="nb" id="fb"><i>🍔</i><div class="nbar"><div id="foodfill"></div></div></div>
+  <div class="nb" id="wb"><i>💧</i><div class="nbar"><div id="waterfill"></div></div></div>
+  <div class="nb" id="hb" style="display:none"><i id="hbIco"></i><div class="nbar"><div></div></div></div>
+  <div class="nb" id="vb" style="display:none"><i id="vbIco"></i><div class="nbar"><div></div></div></div></div>
+  <div id="mid"><div class="lbl" id="wnv">PISTOLA</div><div class="val" id="amv" style="font-size:22px">15 / 0</div><div class="lbl" id="caliberLbl">9×19 mm</div><div class="lbl" id="wtl"></div><div id="thl">💣×0 · 💨×0 · 🔥×0</div></div>
+  <canvas id="mm" width="128" height="128"></canvas>
+ </div>
+ <div id="outpostBanner"></div>
+ <div id="conqInfo"></div>
+ <div id="conqWarn"></div>
+ <div id="defWarn"></div>
+ <div id="objective">LLEGA A LA BALIZA VERDE · SE 64,64 ↘</div>
+ <div id="objList"></div>
+ <div id="cross"></div><div id="damage"></div>
+ <div id="reloadLbl">RECARGANDO</div>
+ <div id="reloadBar"><div id="reloadFill"></div></div>
+ <div id="extwrap"><div id="extlabel">EXTRAYENDO...</div><div id="extbar"><div id="extfill"></div></div></div>
+</div>
+<div id="zoneL"></div><div id="zoneR"></div>
+<div id="mmHotspot"></div>
+<div id="joyBase"><div id="joyKnob"></div></div>
+<div class="btn" id="btnFire">FUEGO</div><div class="btn" id="btnSwap">ARMA</div>
+<div class="btn" id="btnMelee">MELEE</div><div class="btn" id="btnThrow">💣</div>
+<div class="btn" id="btnInv">INV</div><div class="btn" id="btnLight" style="display:none">🔦</div><div class="btn" id="btnLoot">SAQUEAR</div>
+<div class="panel" id="invPanel"><div class="panelTitle">INVENTARIO · TAP = USAR · MANTENER = SOLTAR/ASEGURAR</div>
+ <div class="invLeft">
+ <div class="safeBox"><h4>🔒 CONTENEDOR SEGURO (persiste al morir)</h4><div class="row" id="safeRow"></div></div>
+ <div class="eqrow" id="eqRow"></div><div class="eqrow" id="weaponSlotsRow"></div><div class="eqrow" id="thRow"></div></div><div class="invRight"><div class="grid" id="invGrid"></div><div id="invInfo"></div><button id="invClose">CERRAR</button></div></div>
+<div class="overlay" id="itemActionScreen" style="z-index:120"><div class="loadTag">GESTIÓN DE EQUIPO</div><h2 id="itemActionTitle">OBJETO</h2><p id="itemActionDesc">Selecciona una acción</p><div id="itemActionButtons" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center"></div><button id="itemActionCancel">CANCELAR</button></div>
+<div class="panel" id="lootPanel"><div class="panelTitle">SAQUEAR SOLDADO CAÍDO</div><div class="grid" id="lootGrid"></div><button id="lootClose">CERRAR</button></div>
+<div id="safeCrackUI" style="display:none;position:fixed;z-index:85;top:12%;left:50%;transform:translateX(-50%);width:min(340px,88vw);padding:14px;background:rgba(8,13,16,.94);border:1px solid #d6a343;box-shadow:0 0 22px #000b;color:#eee;text-align:center;pointer-events:none;font-family:'Courier New',monospace">
+ <div style="font-size:11px;letter-spacing:2px;color:#d6a343;margin-bottom:8px">EXTRACCIÓN DOOM // ACCESO</div>
+ <div style="font-size:16px;font-weight:bold;margin-bottom:8px">FORZANDO CAJA FUERTE</div>
+ <div id="safeCrackTime" style="font-size:12px;margin-bottom:8px">30 segundos restantes</div>
+ <div style="height:12px;background:#252a2d;border:1px solid #555;overflow:hidden;margin-bottom:10px"><div id="safeCrackBar" style="height:100%;width:0%;background:linear-gradient(90deg,#a66a20,#f1cf70);transition:width .08s linear"></div></div>
+ <button id="safeCrackCancel" style="pointer-events:auto;padding:9px 20px;background:#48251f;border-color:#d65b46;color:#fff">CANCELAR FORZADO</button>
+</div>
+
+
+<div id="briefingScreen" role="button" aria-label="Informe de inteligencia. Presiona la pantalla para saltar">
+  <video id="briefingVideo" playsinline webkit-playsinline preload="none" disablePictureInPicture></video>
+  <div id="briefingSkipHint">Presiona la pantalla para saltar informe de inteligencia</div>
+</div>
+
+<div id="introScreen" role="button" aria-label="Intro. Toca para saltar">
+  <video id="introVideo" src="/src/assets/video/intro.mp4" playsinline webkit-playsinline preload="auto" disablePictureInPicture></video>
+  <div id="introStart"><span>Toca la pantalla para comenzar</span></div>
+  <div id="introSkipHint">Toca en cualquier lugar para saltar intro</div>
+</div>
+
+<div class="overlay on" id="bootScreen">
+  <img class="bootBg" id="bootBg" src="/src/assets/img/boot-bg.jpg" alt="Extraction Doom - Bosque">
+  <div class="bootVignette"></div>
+  <img class="bootLogo" id="bootLogo" src="/src/assets/img/boot-logo.png" alt="EXTRACTION DOOM">
+  <div id="bootLoadingWrap">
+    <div id="bootLoadingTrack"><div id="bootLoadingFill"></div></div>
+    <div id="bootLoadingText">CARGANDO... 0%</div>
+  </div>
+</div>
+
+<div class="overlay" id="menuScreen">
+ <div class="menuLeft">
+ <div class="menuEyebrow">UNIDAD DE EXTRACCIÓN · SISTEMA DE DESPLIEGUE</div>
+ <h1 class="menuLogoWrap"><img class="menuLogo" src="/src/assets/img/menu-logo.png" alt="EXTRACTION DOOM"></h1>
+ <p class="hi" style="letter-spacing:4px;margin:0;font-size:10px">— OPERACIONES TÁCTICAS —</p>
+ <div id="menuStats"></div>
+ </div>
+ <div class="menuRight">
+ 
+<div id="menuBtns">
+  <button id="startBtn" class="dossierBtn">
+    <div class="btnThumbWrap"><img class="btnThumb" src="/src/assets/img/menu-btn-1.jpg" alt="Mapa"><div class="btnThumbFade"></div></div>
+    <div class="btnContent"><span class="btnTitle">EMPEZAR OPERACIONES</span><span class="btnSub">MISIONES</span></div>
+  </button>
+  <button id="shopBtn" class="dossierBtn shop">
+    <div class="btnThumbWrap"><img class="btnThumb" src="/src/assets/img/menu-btn-2.jpg" alt="Tienda"><div class="btnThumbFade shopFade"></div></div>
+    <div class="btnContent"><span class="btnTitle">TIENDA · ARMAMENTO</span><span class="btnSub">ARSENAL Y SUMINISTROS</span></div>
+  </button>
+  <button id="musicBtn">MÚSICA: SÍ</button>
+  <button id="gfxBtn">GRÁFICOS: AUTO</button>
+  <button id="shadowBtn">SOMBRAS: SÍ</button>
+  <button id="quitBtn" class="dossierBtn quit">
+    <div class="btnThumbWrap"><img class="btnThumb" src="/src/assets/img/menu-btn-3.jpg" alt="Salida"><div class="btnThumbFade quitFade"></div></div>
+    <div class="btnContent"><span class="btnTitle">HUIDA · SALIR DEL JUEGO</span><span class="btnSub">RUTA DE EVACUACIÓN</span></div>
+  </button>
+ </div>
+
+ <div id="menuControlsHint">OPERACIÓN URBANA // ACCESO CLASIFICADO</div>
+ </div>
+</div>
+
+<div class="overlay" id="operationSelectScreen">
+ <div class="selectEyebrow">EXTRACTION DOOM // PLANIFICACIÓN</div>
+ <h2>Escoger lugar de operación</h2>
+ <p class="selectIntro">SELECCIONA EL ÁREA DE DESPLIEGUE Y REVISA EL INFORME DE INTELIGENCIA.</p>
+ <div id="mapMissionCard" class="selected" role="button" tabindex="0" aria-label="Seleccionar mapa Distrito Cero">
+  <div class="mapArt">
+  <img id="mapIllustrationImg" class="mapIllustrationImg" src="" alt="Mapa">
+  <div class="mapArtVignette"></div>
+  <div class="mapArtTop"><span class="mapCode">DISTRITO CERO</span></div>
+  <span class="mapCoords">SECTOR URBANO</span>
+ </div>
+  <div class="mapInfo">
+   <div class="mapStatus">OPERACIÓN DISPONIBLE</div>
+   <h3>DISTRITO CERO</h3>
+   <p class="mapDesc">Un distrito urbano convertido en zona militar. Calles abiertas, edificios abandonados y puestos fortificados controlados por unidades hostiles. Busca suministros, elimina las amenazas y alcanza la baliza de extracción al otro extremo de la ciudad.</p>
+   <div class="mapFacts">
+    <div class="fact">PUESTOS FORTIFICADOS<b>6 ZONAS</b></div>
+    <div class="fact">RESISTENCIA<b>VARIABLE</b></div>
+    <div class="fact">ENTORNO<b>URBANO</b></div>
+    <div class="fact">EXTRACCIÓN<b>1 BALIZA</b></div>
+   </div>
+   <div class="selectedMark">✓ MAPA SELECCIONADO</div>
+  </div>
+ </div>
+ <div id="mapSelectActions"><button id="backToMainBtn">← VOLVER</button><button id="launchOperationBtn">INICIAR OPERACIÓN ▶</button></div>
+ <div id="selectExtras"><button id="frontMapToggle">⚑ CAMBIAR A FRENTE DE CENIZA</button><button id="nightModeBtn">☾ MODO NOCHE: NO</button><button id="dailyBtn">▤ MISIONES</button><button id="achBtn">★ LOGROS</button><button id="nightmareBtn" style="display:none">PESADILLA</button></div>
+</div>
+
+<div class="overlay" id="loadingScreen" aria-live="polite">
+ <div class="loadTag">EXTRACTION DOOM // BRIEFING TÁCTICO</div>
+ <h2>PREPARANDO OPERACIÓN</h2>
+ <p class="loadSub">SINCRONIZANDO BALIZA · ENLACE DE RADIO ESTABLECIDO</p>
+ <div id="loadingTip"><div class="tipLabel">INFORME DE INTELIGENCIA // CONSEJO ALEATORIO</div><div class="tipText" id="loadingTipText">Analizando zona...</div></div>
+ <div id="loadPhases" aria-label="Fases de preparación">
+  <div class="loadPhase" data-phase="1"><span>01</span> RECURSOS</div>
+  <div class="loadPhase" data-phase="2"><span>02</span> TERRENO</div>
+  <div class="loadPhase" data-phase="3"><span>03</span> ENTORNO</div>
+  <div class="loadPhase" data-phase="4"><span>04</span> GUARNICIÓN</div>
+  <div class="loadPhase" data-phase="5"><span>05</span> OPERACIÓN</div>
+ </div>
+ <div id="loadTrack"><div id="loadProgress"></div></div>
+ <div id="loadStatus">INICIANDO PREPARACIÓN TÁCTICA...</div>
+ <button id="continueOperationBtn" style="display:none;margin-top:8px;font-size:12px;padding:12px 18px;letter-spacing:2px">CONTINUAR CON LA OPERACIÓN ▶</button>
+ <button id="retryLoadingBtn" style="display:none;margin-top:8px;font-size:12px;padding:12px 18px;letter-spacing:2px">VOLVER AL MENÚ</button>
+</div>
+<div id="deathBlack" aria-hidden="true"></div>
+<div class="overlay" id="deadScreen"><h2>HAS CAÍDO</h2><p>Los soldados enemigos te han abatido.</p><div id="stats"></div><button id="retryBtn">VOLVER AL MENÚ</button></div>
+<div class="overlay" id="winScreen"><h2>EXTRACCIÓN EXITOSA</h2><p>Saliste con vida de la ciudad.</p><div id="stats2"></div><button id="againBtn">VOLVER AL MENÚ</button></div>
+
+<div id="shopScreen">
+ <div class="shopSide">
+ <div class="shopHeader"><h2>🛒 TIENDA</h2><div class="shopMoney">$<b id="shopMoney">0</b></div></div>
+ <div class="marketBanner" id="marketBanner">📈 MERCADO: ×1.00</div>
+ <div id="insuranceBox"></div>
+ <div class="shopTabs">
+  <button data-tab="weapons" class="active">ARMAS</button>
+  <button data-tab="armor">ARMADURAS</button>
+  <button data-tab="consumables">CONSUMIBLES</button>
+ </div>
+ <button id="shopClose" style="margin-top:8px;padding:8px 22px;font-size:12px">VOLVER AL MENÚ</button>
+ </div>
+ <div class="shopGrid" id="shopGrid"></div>
+ <div class="shopStashWrap">
+  <h3>INVENTARIO · 12 SLOTS · TAP VENDER (75%) · MANTENER: ARMADURA = REPARAR</h3>
+  <div id="shopStash"></div>
+ </div>
+ <div id="shopHint">Reventa 75% · Impuesto 15% · Seguro activo = 50% al morir</div>
+</div>
+
+<div id="dailyScreen">
+ <div class="shopHeader"><h2>📋 MISIONES DIARIAS</h2><div class="shopMoney" id="dailyCount">0/3</div></div>
+ <div class="shopGrid" id="dailyGrid" style="grid-template-columns:1fr"></div>
+ <button id="dailyClose" style="margin-top:8px;padding:8px 22px;font-size:12px">VOLVER AL MENÚ</button>
+</div>
+
+<div id="msg"></div>
+<div id="achScreen">
+ <div class="shopHeader"><h2>🏆 LOGROS</h2><div class="shopMoney" id="achCount">0/12</div></div>
+ <div class="achGrid" id="achGrid"></div>
+ <button id="achClose" style="margin-top:8px;padding:8px 22px;font-size:12px">VOLVER AL MENÚ</button>
+</div>
+
+<!-- ===== MISIONES AMPLIADO ===== -->
+<div id="bigMapOverlay">
+ <div id="bigMapHeader">
+  <div>
+   <div class="ttl">🗺 MISIONES</div>
+   <div class="sub">TOCA PARA MARCAR · ARRASTRA PARA MOVER · PELLIZCA PARA ZOOM</div>
+  </div>
+  <button id="bigMapClose">CERRAR</button>
+ </div>
+ <div id="bigMapWrap">
+  <canvas id="bigMapCanvas"></canvas>
+  <div id="bigMapZoom">
+   <button id="bigMapZoomIn" aria-label="Acercar">+</button>
+   <button id="bigMapZoomOut" aria-label="Alejar">−</button>
+   <button id="bigMapCenter" aria-label="Centrar en mí">◎</button>
+   <button id="bigMapFit" aria-label="Ver todo">⤢</button>
+  </div>
+ </div>
+ <div id="bigMapLegend">
+  <div class="legendItem"><div class="legendSwatch" style="background:#9fd8ff"></div>PUESTO N1</div>
+  <div class="legendItem"><div class="legendSwatch" style="background:#ffb040"></div>PUESTO N2</div>
+  <div class="legendItem"><div class="legendSwatch" style="background:#ff3a3a"></div>BASE N3</div>
+  <div class="legendItem"><div class="legendSwatch" style="background:#7dff8f"></div>TOMADO</div>
+  <div class="legendItem"><div class="legendSwatch" style="background:#ff2020"></div>ALARMA</div>
+  <div class="legendItem"><div class="legendSwatch" style="background:#d6a343"></div>CAJA FUERTE</div>
+  <div class="legendItem"><div class="legendSwatch" style="background:#4f8;border:1px solid #fff"></div>EXTRACCIÓN</div>
+  <div class="legendItem"><div class="legendSwatch" style="background:#ff8a2a;border:1px solid #fff"></div>REFUERZOS</div>
+  <div class="legendItem"><div class="legendSwatch" style="background:#ff3a3a;border:1px solid #000"></div>ALARMA</div>
+  <div class="legendItem"><div class="legendSwatch" style="background:#fff"></div>JUGADOR</div>
+  <div class="legendItem"><div class="legendSwatch round" style="background:#ffd24a"></div>MARCA</div>
+  <div class="legendItem"><div class="legendSwatch" style="background:#ffd24a;opacity:.9;height:3px"></div>RUTA</div>
+ </div>
+ <button id="bigMapClear">BORRAR MARCAS</button>
+</div>
+<script type="module" src="/src/main.js"></script>
+<script type="module" src="/src/iconos-tacticos.js"></script>
+<script type="module" src="/src/boot-loader.js"></script>
+<script type="module" src="/src/orientation.js"></script>
+</body></html>
